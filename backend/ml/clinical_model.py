@@ -6,6 +6,7 @@ import pickle
 # Load dataset from .xls file
 df = pd.read_excel("../../datasets/clinical/pbc.xls")
 
+
 # Rename columns if needed (sometimes PBC XLS uses uppercase or different names)
 df.columns = df.columns.str.lower()
 
