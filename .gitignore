@@ -19,7 +19,6 @@ frontend/yarn-error.log*
 # --------------------
 backend/__pycache__/
 backend/*.pyc
-backend/models/
 backend/.env
 
 # --------------------
