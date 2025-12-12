@@ -1,21 +1,26 @@
-import pickle
-import numpy as np
-import tensorflow as tf
+# ml/hybrid_predictor.py
+from .clinical_predictor import ClinicalPredictor
+from .ultrasound_predictor import UltrasoundPredictor
 
-# Load both models
-clinical = pickle.load(open("../models/xgboost_model.pkl", "rb"))
-ultra = tf.keras.models.load_model("../models/densenet_model.h5")
+class HybridPredictor:
+    def __init__(self):
+        self.clinical_model = ClinicalPredictor()
+        self.ultrasound_model = UltrasoundPredictor()
 
-def predict_hybrid(clinical_features, image_array):
-    p1 = clinical.predict_proba([clinical_features])[0][1]
-    p2 = float(ultra.predict(image_array)[0][0])
+        # weights from abstract/SRS accuracy comparison
+        self.w_clinical = 0.6
+        self.w_ultrasound = 0.4
 
-    # Weighted soft voting
-    final = 0.6*p1 + 0.4*p2
+    def predict(self, clinical_data: dict, image_bytes: bytes):
+        p1 = self.clinical_model.predict(clinical_data)
+        p2 = self.ultrasound_model.predict(image_bytes)
 
-    return {
-        "clinical": float(p1),
-        "ultrasound": float(p2),
-        "final": float(final),
-        "label": "High Risk" if final > 0.5 else "Low Risk"
-    }
+        final = (self.w_clinical * p1) + (self.w_ultrasound * p2)
+
+        return {
+            "clinical_prob": p1,
+            "ultrasound_prob": p2,
+            "final_prob": final,
+            "diagnosis": "High Fibrosis Risk" if final > 0.5 else "Low Fibrosis Risk",
+            "confidence": abs(final - 0.5) * 2  # normalized 0–1 confidence
+        }
