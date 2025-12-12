@@ -6,17 +6,33 @@ from .preprocess_image import preprocess_ultrasound
 class UltrasoundPredictor:
     def __init__(self, model_path="models/densenet_model.h5"):
         try:
-            self.model = tf.keras.models.load_model(model_path)
+            # 🔥 Keras 3 models MUST be loaded with compile=False
+            self.model = tf.keras.models.load_model(
+                model_path,
+                compile=False
+            )
         except Exception as e:
             raise RuntimeError(f"Failed to load ultrasound model: {e}")
 
         # GPU fallback check
-        self.device = "GPU" if tf.config.list_physical_devices('GPU') else "CPU"
+        gpus = tf.config.list_physical_devices("GPU")
+        self.device = "GPU" if gpus else "CPU"
 
     def predict(self, file_bytes: bytes):
         try:
-            img = preprocess_ultrasound(file_bytes)   # returns (1,224,224,3)
-            prob = float(self.model.predict(img)[0][0])
+            # Preprocess image → returns (1, 224, 224, 3)
+            img_tensor = preprocess_ultrasound(file_bytes)
+
+            # Ensure it's float32 (Keras 3 strict mode)
+            img_tensor = tf.cast(img_tensor, tf.float32)
+
+            # Predict
+            pred = self.model.predict(img_tensor)[0]
+
+            # Some models output shape (1,) others (1,1)
+            prob = float(pred[0]) if isinstance(pred, (list, np.ndarray)) else float(pred)
+
             return prob
+
         except Exception as e:
             raise RuntimeError(f"Ultrasound prediction failed: {e}")
