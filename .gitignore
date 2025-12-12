@@ -18,11 +18,17 @@ frontend/yarn-error.log*
 # BACKEND (Python)
 # --------------------
 backend/__pycache__/
+backend/ml/__pycache__/
 backend/*.pyc
 backend/.env
+
 
 # --------------------
 # OS/System
 # --------------------
 .DS_Store
 Thumbs.db
+
+
+backend/models/densenet_model.h5
+backend/venv/

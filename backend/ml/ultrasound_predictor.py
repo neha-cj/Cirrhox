@@ -4,7 +4,7 @@ import numpy as np
 from .preprocess_image import preprocess_ultrasound
 
 class UltrasoundPredictor:
-    def __init__(self, model_path="../models/densenet_model.h5"):
+    def __init__(self, model_path="models/densenet_model.h5"):
         try:
             self.model = tf.keras.models.load_model(model_path)
         except Exception as e:
