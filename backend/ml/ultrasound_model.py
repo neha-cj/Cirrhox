@@ -1,38 +1,63 @@
+# backend/ml/ultrasound_model.py
 import tensorflow as tf
-from tensorflow.keras.applications import DenseNet121
-from tensorflow.keras.layers import Dense, GlobalAveragePooling2D
-from tensorflow.keras.models import Model
-from tensorflow.keras.preprocessing.image import ImageDataGenerator
+import os
+import numpy as np
 
-# Load base model
-base = DenseNet121(include_top=False, input_shape=(224, 224, 3), weights="imagenet")
-x = GlobalAveragePooling2D()(base.output)
-output = Dense(1, activation="sigmoid")(x)
+# 1. Setup the path to the .h5 file dynamically
+# This ensures it finds the file on your teammate's computer too.
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+MODEL_PATH = os.path.join(BASE_DIR, 'models', 'densenet_model.h5')
 
-model = Model(inputs=base.input, outputs=output)
+class UltrasoundPredictor:
+    def __init__(self):
+        self.model = None
+        self._load_model()
 
-model.compile(optimizer="adam", loss="binary_crossentropy", metrics=["accuracy"])
+    def _load_model(self):
+        """Loads the model from disk. Handles errors gracefully."""
+        if os.path.exists(MODEL_PATH):
+            try:
+                print(f"Loading DenseNet model from {MODEL_PATH}...")
+                self.model = tf.keras.models.load_model(MODEL_PATH)
+                print("✅ DenseNet model loaded successfully.")
+            except Exception as e:
+                print(f"❌ ERROR: Failed to load DenseNet model: {e}")
+        else:
+            print(f"❌ ERROR: Model file not found at {MODEL_PATH}")
+            print("Please download 'densenet_model.h5' and place it in backend/models/")
 
-datagen = ImageDataGenerator(rescale=1./255, validation_split=0.2)
+    def predict(self, preprocessed_image):
+        """
+        Runs inference and returns the diagnosis + probability.
+        """
+        if self.model is None:
+            return {"error": "Model is not loaded. Check server logs."}
 
-train_gen = datagen.flow_from_directory(
-    "../../datasets/ultrasound/",
-    target_size=(224, 224),
-    batch_size=16,
-    class_mode="binary",
-    subset="training"
-)
+        try:
+            # 1. Get raw prediction (Value between 0 and 1)
+            prediction = self.model.predict(preprocessed_image)
+            score = float(prediction[0][0])
+            
+            # 2. Interpret the Score
+            # Since we trained with classes=['Normal', 'Fibrosis']:
+            # 0.0 -> Normal
+            # 1.0 -> Fibrosis
+            
+            diagnosis = "Fibrosis" if score > 0.5 else "Normal"
+            
+            # 3. Calculate Confidence (How sure is the AI?)
+            # If score is 0.9 (Fibrosis), confidence is 0.9
+            # If score is 0.1 (Normal), confidence is 0.9 (sure it's NOT fibrosis)
+            confidence = score if score > 0.5 else 1 - score
 
-val_gen = datagen.flow_from_directory(
-    "../../datasets/ultrasound/",
-    target_size=(224, 224),
-    batch_size=16,
-    class_mode="binary",
-    subset="validation"
-)
+            return {
+                "diagnosis": diagnosis,
+                "fibrosis_probability": score,  # Required for Soft Voting Ensemble
+                "confidence": confidence
+            }
 
-model.fit(train_gen, validation_data=val_gen, epochs=5)
+        except Exception as e:
+            return {"error": str(e)}
 
-model.save("../models/densenet_model.h5")
-
-print("DenseNet saved!")
+# Create a single instance to be imported by the API route
+ultrasound_predictor = UltrasoundPredictor()
