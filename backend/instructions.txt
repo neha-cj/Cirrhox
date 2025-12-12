@@ -1,0 +1,178 @@
+===========================================
+ C I R R H O X   -  Backend Setup Guide
+===========================================
+
+This guide explains how to set up and run the backend API for the Cirrhox 
+project, including environment setup, model installation, and API usage.
+
+-------------------------------------------
+1. PREREQUISITES
+-------------------------------------------
+Before running the backend, ensure you have:
+
+- Python 3.9 (required)
+- Git
+- 64-bit Windows/macOS/Linux
+- At least 2 GB free RAM (TensorFlow requirement)
+
+-------------------------------------------
+2. CLONE THE REPOSITORY
+-------------------------------------------
+
+git clone <REPO_URL>
+cd Cirrhox/backend
+
+-------------------------------------------
+3. CREATE & ACTIVATE VIRTUAL ENVIRONMENT
+-------------------------------------------
+
+# Create venv
+python -m venv venv
+
+# Activate venv
+Windows (PowerShell):
+    venv\Scripts\activate
+
+macOS/Linux:
+    source venv/bin/activate
+
+-------------------------------------------
+4. INSTALL DEPENDENCIES
+-------------------------------------------
+
+pip install -r requirements.txt
+
+This installs:
+- FastAPI & Uvicorn
+- TensorFlow (for ultrasound model)
+- XGBoost (for clinical model)
+- NumPy, Pillow (image preprocessing)
+- Pandas, Scikit-learn (model compatibility)
+
+-------------------------------------------
+5. VERIFY MODEL FILES EXIST
+-------------------------------------------
+
+Models must be inside:
+
+backend/models/
+    ├── densenet_model.h5          (Ultrasound model)
+    ├── xgboost_model.json         (Clinical model)
+
+If these files are missing, backend WILL NOT WORK.
+
+-------------------------------------------
+6. RUN THE BACKEND SERVER
+-------------------------------------------
+
+uvicorn main:app --reload
+
+API will start at:
+http://127.0.0.1:8000
+
+Swagger Docs available at:
+http://127.0.0.1:8000/docs
+
+-------------------------------------------
+7. API ENDPOINTS
+-------------------------------------------
+
+--------------------------
+POST /predict/clinical
+--------------------------
+Input: JSON body
+{
+  "bili": float,
+  "albumin": float,
+  "protime": float,
+  "sgot": float
+}
+
+Output:
+{
+  "clinical_prob": 0.85,
+  "label": "High Risk"
+}
+
+--------------------------
+POST /predict/ultrasound
+--------------------------
+Input: Form-data
+file = ultrasound image (.jpg/.png)
+
+Output:
+{
+  "ultrasound_prob": 0.92,
+  "label": "High Risk"
+}
+
+--------------------------
+POST /predict/hybrid
+--------------------------
+Input: Form-data
+- file = ultrasound image
+- data = clinical JSON string
+
+Example data:
+{
+  "bili": 1.2,
+  "albumin": 3.4,
+  "protime": 11,
+  "sgot": 88
+}
+
+Output:
+{
+  "clinical_prob": ...,
+  "ultrasound_prob": ...,
+  "final_prob": ...,
+  "diagnosis": "High Fibrosis Risk",
+  "confidence": ...
+}
+
+-------------------------------------------
+8. COMMON ERRORS & FIXES
+-------------------------------------------
+
+(1) ERROR: "No module named xgboost"
+→ Run: pip install xgboost==1.7.6
+
+(2) ERROR: TensorFlow cannot load .h5 model
+→ Ensure keras==3.x is installed:
+     pip install keras==3.3.3
+
+(3) ERROR: “training data did not have fields...”
+→ Wrong clinical feature names. Use:
+    bili, albumin, protime, sgot
+
+(4) ERROR: “Failed to load ultrasound model”
+→ Ensure models/densenet_model.h5 exists.
+
+-------------------------------------------
+9. CLEANUP / DEVELOPMENT NOTES
+-------------------------------------------
+
+Do NOT commit these to Git:
+- venv/
+- __pycache__/
+- *.pyc
+
+Do commit:
+- models/*.json (clinical model)
+- models/*.h5 (ultrasound model)
+- ml/*.py files
+- requirements.txt
+
+-------------------------------------------
+10. CONTACT / TEAM NOTES
+-------------------------------------------
+
+If anything fails to run:
+- Check versions inside venv
+- Ensure correct file paths
+- Review errors in terminal
+- Contact backend engineer (Neha)
+
+===========================================
+        END OF BACKEND SETUP GUIDE
+===========================================
