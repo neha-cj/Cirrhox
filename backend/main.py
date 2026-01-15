@@ -1,4 +1,4 @@
-from fastapi import FastAPI, UploadFile, File, HTTPException
+from fastapi import FastAPI, UploadFile, File, Form, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from ml.hybrid_predictor import HybridPredictor
 from ml.clinical_predictor import ClinicalPredictor
@@ -55,16 +55,31 @@ async def ultrasound_predict(file: UploadFile = File(...)):
 # -------------------------------
 @app.post("/predict/hybrid")
 async def hybrid_predict(
-    data: dict,
+    bilirubin: float = Form(...),
+    albumin: float = Form(...),
+    protime: float = Form(...),
+    ast: float = Form(...),
     file: UploadFile = File(...)
 ):
+    clinical_data = {
+        "bili": bilirubin,
+        "albumin": albumin,
+        "protime": protime,
+        "sgot": ast
+    }
+
     try:
         img_bytes = await file.read()
-        result = hybrid_model.predict(data, img_bytes)
-        return result
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
+        print("Clinical data:", clinical_data)
+        print("Image bytes length:", len(img_bytes))
 
+        result = hybrid_model.predict(clinical_data, img_bytes)
+        return result
+
+    except Exception as e:
+        print("HYBRID ERROR:", e)   # 👈 THIS LINE
+        raise HTTPException(status_code=400, detail=str(e))
+    
 
 @app.get("/")
 def home():

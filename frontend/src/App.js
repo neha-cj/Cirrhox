@@ -21,15 +21,18 @@ function App() {
       const ast = e.target.ast.value;
       const file = e.target.file.files[0];
 
-      // Put clinical data as JSON string
-      formData.append(
-        "clinicalData",
-        JSON.stringify({ bilirubin, albumin, protime, ast })
-      );
-      // File field (must match backend name)
-      if (file) formData.append("file", file);
+      
+      formData.append("bilirubin", bilirubin);
+      formData.append("albumin", albumin);
+      formData.append("protime", protime);
+      formData.append("ast", ast);
+      formData.append("file", file);
 
-      const res = await fetch("http://localhost:8000/predict", {
+      if (file) {
+        formData.append("file", file);
+      }
+
+      const res = await fetch("http://localhost:8000/predict/hybrid", {
         method: "POST",
         body: formData,
       });
@@ -121,30 +124,19 @@ function App() {
           {!result && <p>No prediction yet. Submit the form to see results.</p>}
           {result && (
             <div className="result-box">
-              <p>
-                <strong>Final Label:</strong> {result.label || "N/A"}
-              </p>
-              <p>
-                <strong>Final Score:</strong>{" "}
-                {result.final !== undefined
-                  ? result.final.toFixed(3)
-                  : "N/A"}
-              </p>
-              <div className="probabilities">
-                <p>
-                  <strong>Clinical Model:</strong>{" "}
-                  {result.clinical !== undefined
-                    ? result.clinical.toFixed(3)
-                    : "N/A"}
-                </p>
-                <p>
-                  <strong>Image Model:</strong>{" "}
-                  {result.ultrasound !== undefined
-                    ? result.ultrasound.toFixed(3)
-                    : "N/A"}
-                </p>
-              </div>
-              <pre>{JSON.stringify(result, null, 2)}</pre>
+                <p><strong>Final Label:</strong> {result.diagnosis || "N/A"}</p>
+
+                <p><strong>Final Score:</strong>{" "}
+                    {result.final_prob !== undefined? result.final_prob.toFixed(3): "N/A"}</p>
+
+                <div className="probabilities">
+                    <p><strong>Clinical Model:</strong>{" "}
+                          {result.clinical_prob !== undefined? result.clinical_prob.toFixed(3): "N/A"}
+                    </p>
+                    <p><strong>Image Model:</strong>{" "}
+                          {result.ultrasound_prob !== undefined? result.ultrasound_prob.toFixed(3): "N/A"}
+                    </p>
+                </div>
             </div>
           )}
         </section>
