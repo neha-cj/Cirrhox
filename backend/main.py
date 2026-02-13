@@ -3,8 +3,17 @@ from fastapi.middleware.cors import CORSMiddleware
 from ml.hybrid_predictor import HybridPredictor
 from ml.clinical_predictor import ClinicalPredictor
 from ml.ultrasound_predictor import UltrasoundPredictor
+from database import engine, Base
+from models_db import user_model, history_model
+from routers import auth
+
 
 app = FastAPI(title="Cirrhox Backend")
+
+
+Base.metadata.create_all(bind=engine)
+
+app.include_router(auth.router)
 
 # Allow frontend to call this API
 app.add_middleware(
