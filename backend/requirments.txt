@@ -2,7 +2,7 @@ fastapi==0.115.2
 uvicorn==0.30.1
 python-multipart==0.0.9
 
-tensorflow==2.15.0
+tensorflow==2.16.2
 xgboost==1.7.6
 
 numpy==1.26.4
