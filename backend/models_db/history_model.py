@@ -1,4 +1,5 @@
-from sqlalchemy import Column, Integer, String, Float, ForeignKey
+from sqlalchemy import Column, Integer, String, Float, ForeignKey, DateTime
+from sqlalchemy.sql import func
 from database import Base
 
 class PredictionHistory(Base):
@@ -8,3 +9,4 @@ class PredictionHistory(Base):
     user_id = Column(Integer, ForeignKey("users.id"))
     prediction = Column(String)
     probability = Column(Float)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
