@@ -78,6 +78,9 @@ async def hybrid_predict(
         probability = result.get("probability")
         label = result.get("label")
 
+        if probability is None or label is None:
+            raise HTTPException(status_code=400, detail="Invalid prediction result")
+
         # 🔥 Save to history
         history_entry = PredictionHistory(
             user_id=current_user.id,
