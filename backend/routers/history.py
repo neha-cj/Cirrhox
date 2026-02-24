@@ -39,10 +39,3 @@ def all_history(
         })
 
     return result
-
-# @router.get("/all-history")
-# def all_history(
-#     db: Session = Depends(get_db),
-#     current_user: User = Depends(doctor_only)
-# ):
-#     return db.query(PredictionHistory).all()

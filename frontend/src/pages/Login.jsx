@@ -9,30 +9,41 @@ export default function Login() {
   const [password, setPassword] = useState("");
 
   const handleLogin = async (e) => {
-    e.preventDefault();
+  e.preventDefault();
 
-    try {
-        const res = await API.post("/login", {
-        email: email,
-        password: password
-        });
+  try {
+    const formData = new URLSearchParams();
+    formData.append("username", email);   // IMPORTANT
+    formData.append("password", password);
 
-        localStorage.setItem("token", res.data.access_token);
+    const res = await API.post("/login", formData, {
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+    });
 
-        const user = await API.get("/me");
-        localStorage.setItem("role", user.data.role);
+    localStorage.setItem("token", res.data.access_token);
 
-        if (user.data.role === "doctor") {
-        navigate("/history");
-        } else {
-        navigate("/dashboard");
-        }
+    // Now fetch user info
+    const user = await API.get("/me", {
+      headers: {
+        Authorization: `Bearer ${res.data.access_token}`,
+      },
+    });
 
-    } catch (err) {
-        console.log(err.response?.data);
-        alert("Login failed");
+    localStorage.setItem("role", user.data.role);
+
+    if (user.data.role === "doctor") {
+      navigate("/history");
+    } else {
+      navigate("/dashboard");
     }
-    };
+
+  } catch (err) {
+    console.log(err.response?.data);
+    alert("Login failed");
+  }
+};
 
   return (
     <div>

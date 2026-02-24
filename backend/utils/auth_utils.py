@@ -1,8 +1,8 @@
 from datetime import datetime, timedelta
 from jose import JWTError, jwt
 from fastapi import Depends, HTTPException
-# from fastapi.security import OAuth2PasswordBearer
-from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+from fastapi.security import OAuth2PasswordBearer
+# from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from sqlalchemy.orm import Session
 from passlib.context import CryptContext
 
@@ -28,8 +28,12 @@ def verify_password(plain_password, hashed_password):
 # JWT Authentication Section
 # =========================
 
-# oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
-security = HTTPBearer()
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
+# security = HTTPBearer()
+
+# =========================
+# JWT Creation
+# =========================
 
 def create_access_token(data: dict):
     to_encode = data.copy()
@@ -39,12 +43,12 @@ def create_access_token(data: dict):
 
 
 def get_current_user(
-    # token: str = Depends(oauth2_scheme),
-    credentials: HTTPAuthorizationCredentials = Depends(security),
+    token: str = Depends(oauth2_scheme),
+    # credentials: HTTPAuthorizationCredentials = Depends(security),
     db: Session = Depends(get_db)
 ):
     try:
-        token = credentials.credentials
+        # token = credentials.credentials
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         email: str = payload.get("sub")
 
