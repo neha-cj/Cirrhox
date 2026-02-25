@@ -1,6 +1,8 @@
 import { useState } from "react";
 import API from "../utils/api";
 import { useNavigate } from "react-router-dom";
+import { Activity } from "lucide-react";
+import "./Register.css";
 
 export default function Register() {
   const navigate = useNavigate();
@@ -24,26 +26,90 @@ export default function Register() {
   };
 
   return (
-    <div>
-      <h2>Register</h2>
-      <form onSubmit={handleSubmit}>
-        <input placeholder="Name"
-          onChange={(e) => setForm({...form, name: e.target.value})} />
+    <div className="auth-container">
 
-        <input placeholder="Email"
-          onChange={(e) => setForm({...form, email: e.target.value})} />
+      {/* Brand */}
+      <div className="register-container">
+        <div className="register-header">
+          <h1 className="register-brand">
+            <Activity className="register-brand-icon" size={28} />
+            CirrhoX
+          </h1>
+          <h2>Create Account</h2>
+          <p>Register to get started</p>
+        </div>
 
-        <input type="password" placeholder="Password"
-          onChange={(e) => setForm({...form, password: e.target.value})} />
+      {/* Card */}
+      <form className="register-card" onSubmit={handleSubmit}>
 
-        <select
-          onChange={(e) => setForm({...form, role: e.target.value})}>
-          <option value="patient">Patient</option>
-          <option value="doctor">Doctor</option>
-        </select>
+        <label>Full Name</label>
+        <input
+          //placeholder="Dr. Jane Smith"
+          value={form.name}
+          onChange={(e) =>
+            setForm({ ...form, name: e.target.value })
+          }
+          required
+        />
 
-        <button type="submit">Register</button>
+        <label>Email</label>
+        <input
+          type="email"
+          // placeholder="jane@hospital.com"
+          value={form.email}
+          onChange={(e) =>
+            setForm({ ...form, email: e.target.value })
+          }
+          required
+        />
+
+        <label>Password</label>
+        <input
+          type="password"
+          //placeholder="••••••••"
+          value={form.password}
+          onChange={(e) =>
+            setForm({ ...form, password: e.target.value })
+          }
+          required
+        />
+
+        <label>Role</label>
+
+        <div className="role-toggle">
+          <button
+            type="button"
+            className={form.role === "patient" ? "active" : ""}
+            onClick={() =>
+              setForm({ ...form, role: "patient" })
+            }
+          >
+            Patient
+          </button>
+
+          <button
+            type="button"
+            className={form.role === "doctor" ? "active" : ""}
+            onClick={() =>
+              setForm({ ...form, role: "doctor" })
+            }
+          >
+            Doctor
+          </button>
+        </div>
+
+        <button type="submit" className="register-btn">
+          Register
+        </button>
+
+        <p className="register-footer">
+          Already have an account?{" "}
+          <span onClick={() => navigate("/login")}>
+            Login
+          </span>
+        </p>
       </form>
     </div>
+  </div>
   );
 }
