@@ -32,3 +32,13 @@ Thumbs.db
 
 backend/models/densenet_model.h5
 backend/venv/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Virtual env
+venv/
+.env
