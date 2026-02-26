@@ -75,8 +75,8 @@ async def hybrid_predict(
 
         result = hybrid_model.predict(clinical_data, img_bytes)
 
-        probability = result.get("probability")
-        label = result.get("label")
+        probability = result.get("final_prob")
+        label = result.get("diagnosis")
 
         if probability is None or label is None:
             raise HTTPException(status_code=400, detail="Invalid prediction result")
@@ -85,7 +85,12 @@ async def hybrid_predict(
         history_entry = PredictionHistory(
             user_id=current_user.id,
             prediction=label,
-            probability=probability
+            probability=probability,
+
+            bilirubin = bilirubin,
+            albumin = albumin,
+            protime = protime,
+            ast = ast
         )
 
         db.add(history_entry)
@@ -95,4 +100,5 @@ async def hybrid_predict(
         return result
 
     except Exception as e:
+        print("🔥 HYBRID ERROR:", e)
         raise HTTPException(status_code=400, detail=str(e))

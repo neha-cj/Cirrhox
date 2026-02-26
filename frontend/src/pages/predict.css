@@ -1,0 +1,142 @@
+.predict-page {
+  min-height: 100vh;
+  background: #f4f6f8;
+  padding: 50px 20px;
+  font-family: "Inter", sans-serif;
+}
+
+.predict-header {
+  max-width: 900px;
+  margin: 0 auto 30px auto;
+}
+
+.predict-header h1 {
+  font-size: 28px;
+  font-weight: 700;
+  color: #1f2937;
+}
+
+.predict-header p {
+  color: #6b7280;
+  margin-top: 6px;
+}
+
+.predict-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 28px;
+  font-weight: 700;
+  color: #1f2937;
+}
+
+.predict-icon {
+  color: #2f9e8f;
+}
+
+.predict-card {
+  max-width: 900px;
+  margin: auto;
+  background: white;
+  padding: 35px;
+  border-radius: 14px;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+}
+
+.predict-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.input-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.input-group label {
+  font-weight: 600;
+  margin-bottom: 6px;
+  color: #374151;
+}
+
+.input-group input {
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+  font-size: 14px;
+}
+
+.input-group input:focus {
+  outline: none;
+  border-color: #3b82f6;
+}
+
+.upload-section {
+  margin-top: 30px;
+}
+
+.upload-section label {
+  font-weight: 600;
+  color: #374151;
+}
+
+.upload-box {
+  margin-top: 8px;
+  border: 2px dashed #cbd5e1;
+  border-radius: 10px;
+  padding: 40px;
+  text-align: center;
+  position: relative;
+  cursor: pointer;
+  transition: 0.3s ease;
+}
+
+.upload-box:hover {
+  background: #f9fafb;
+}
+
+.upload-box input {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.upload-box p {
+  font-weight: 500;
+  color: #6b7280;
+}
+
+.upload-box span {
+  font-size: 12px;
+  color: #9ca3af;
+}
+
+.predict-btn {
+  width: 100%;
+  margin-top: 25px;
+  padding: 12px;
+  background: #2f9e8f;
+  border: none;
+  border-radius: 8px;
+  color: white;
+  font-weight: 600;
+  font-size: 15px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.predict-btn:hover {
+  background: #248c7e;
+}
+
+.error {
+  color: red;
+  margin-top: 10px;
+}
+
+.upload-icon {
+  color: #94a3b8;
+  margin-bottom: 12px;
+}

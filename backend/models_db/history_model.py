@@ -9,4 +9,9 @@ class PredictionHistory(Base):
     user_id = Column(Integer, ForeignKey("users.id"))
     prediction = Column(String)
     probability = Column(Float)
+
+    bilirubin = Column(Float)
+    albumin = Column(Float)
+    protime = Column(Float)
+    ast = Column(Float)
     created_at = Column(DateTime(timezone=True), server_default=func.now())

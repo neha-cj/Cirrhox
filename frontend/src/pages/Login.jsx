@@ -36,9 +36,9 @@ export default function Login() {
       localStorage.setItem("role", user.data.role);
 
       if (user.data.role === "doctor") {
-        navigate("/history");
+        navigate("/doctor");
       } else {
-        navigate("/dashboard");
+        navigate("/patient");
       }
     } catch (err) {
       console.log(err.response?.data);
@@ -48,8 +48,9 @@ export default function Login() {
 
   return (
     <div className="login-page">
-      <div className="login-container">
-        
+
+      {/* Header OUTSIDE */}
+      <div className="login-header">
         <div className="logo-section">
           <Activity className="logo-icon" size={28} strokeWidth={2.5} />
           <h1>CirrhoX</h1>
@@ -57,12 +58,14 @@ export default function Login() {
 
         <h2>Welcome Back</h2>
         <p className="subtitle">Sign in to your account</p>
+      </div>
 
+      {/* Card */}
+      <div className="login-card">
         <form onSubmit={handleLogin} className="login-form">
           <label>Email</label>
           <input
             type="email"
-            // placeholder="jane@hospital.com"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
@@ -71,7 +74,6 @@ export default function Login() {
           <label>Password</label>
           <input
             type="password"
-            //placeholder="••••••••"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
@@ -80,16 +82,65 @@ export default function Login() {
           <button type="submit" className="login-btn">
             Login
           </button>
+
+          {/* REGISTER TEXT NOW INSIDE CARD */}
+          <p className="register-text">
+            Don’t have an account?{" "}
+            <span onClick={() => navigate("/register")}>
+              Register
+            </span>
+          </p>
+
         </form>
-
-        <p className="register-text">
-          Don’t have an account?{" "}
-          <span onClick={() => navigate("/register")}>
-            Register
-          </span>
-        </p>
-
       </div>
+
     </div>
   );
+
+  // return (
+  //   <div className="login-page">
+  //     <div className="login-container">
+        
+  //       <div className="logo-section">
+  //         <Activity className="logo-icon" size={28} strokeWidth={2.5} />
+  //         <h1>CirrhoX</h1>
+  //       </div>
+
+  //       <h2>Welcome Back</h2>
+  //       <p className="subtitle">Sign in to your account</p>
+
+  //       <form onSubmit={handleLogin} className="login-form">
+  //         <label>Email</label>
+  //         <input
+  //           type="email"
+  //           // placeholder="jane@hospital.com"
+  //           value={email}
+  //           onChange={(e) => setEmail(e.target.value)}
+  //           required
+  //         />
+
+  //         <label>Password</label>
+  //         <input
+  //           type="password"
+  //           //placeholder="••••••••"
+  //           value={password}
+  //           onChange={(e) => setPassword(e.target.value)}
+  //           required
+  //         />
+
+  //         <button type="submit" className="login-btn">
+  //           Login
+  //         </button>
+  //       </form>
+
+  //       <p className="register-text">
+  //         Don’t have an account?{" "}
+  //         <span onClick={() => navigate("/register")}>
+  //           Register
+  //         </span>
+  //       </p>
+
+  //     </div>
+  //   </div>
+  // );
 }

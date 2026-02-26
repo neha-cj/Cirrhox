@@ -3,8 +3,10 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
-import Dashboard from "./pages/Dashboard";
+import PatientDashboard from "./pages/PatientDashboard";
+import DoctorDashboard from "./pages/DoctorDashboard";
 import History from "./pages/History";
+import Predict from "./pages/Predict";
 
 import ProtectedRoute from "./components/ProtectedRoute";
 
@@ -18,12 +20,31 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
 
-        {/* Patient + Doctor Dashboard */}
+        {/* Patient Dashboard */}
         <Route
-          path="/dashboard"
+          path="/patient"
           element={
-            <ProtectedRoute allowedRoles={["patient", "doctor"]}>
-              <Dashboard />
+            <ProtectedRoute allowedRoles={["patient"]}>
+              <PatientDashboard />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Doctor Dashboard */}
+        <Route
+          path="/doctor"
+          element={
+            <ProtectedRoute allowedRoles={["doctor"]}>
+              <DoctorDashboard />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/predict"
+          element={
+            <ProtectedRoute allowedRoles={["patient"]}>
+              <Predict />
             </ProtectedRoute>
           }
         />
