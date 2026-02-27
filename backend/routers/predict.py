@@ -77,8 +77,9 @@ async def hybrid_predict(
 
         probability = result.get("final_prob")
         label = result.get("diagnosis")
+        severity = result.get("severity")
 
-        if probability is None or label is None:
+        if probability is None or label is None or severity is None:
             raise HTTPException(status_code=400, detail="Invalid prediction result")
 
         # 🔥 Save to history
@@ -86,6 +87,7 @@ async def hybrid_predict(
             user_id=current_user.id,
             prediction=label,
             probability=probability,
+            severity=severity,
 
             bilirubin = bilirubin,
             albumin = albumin,

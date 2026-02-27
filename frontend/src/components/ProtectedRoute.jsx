@@ -9,7 +9,7 @@ export default function ProtectedRoute({ children, allowedRoles }) {
   }
 
   if (allowedRoles && !allowedRoles.includes(role)) {
-    return <Navigate to="/dashboard" />;
+    return <Navigate to={`/${role}`} />;
   }
 
   return children;

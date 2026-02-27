@@ -43,7 +43,7 @@ function App() {
         <Route
           path="/predict"
           element={
-            <ProtectedRoute allowedRoles={["patient"]}>
+            <ProtectedRoute allowedRoles={["patient", "doctor"]}>
               <Predict />
             </ProtectedRoute>
           }

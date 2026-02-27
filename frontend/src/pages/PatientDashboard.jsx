@@ -23,15 +23,10 @@ export default function PatientDashboard() {
     }
   }
 
-  function getSeverity(prob) {
-    if (prob < 0.4) return "Low";
-    if (prob < 0.7) return "Medium";
-    return "High";
-  }
-
   function getSeverityClass(level) {
+    if (!level) return "severity low";
     if (level === "Low") return "severity low";
-    if (level === "Medium") return "severity medium";
+    if (level === "Moderate") return "severity medium";
     return "severity high";
   }
 
@@ -44,7 +39,6 @@ export default function PatientDashboard() {
   return (
     <div className="dashboard-container">
       <div className="dashboard-header">
-        {/* Top Row */}
         <div className="header-row">
           <div className="title-section">
             <h1>My Health Records</h1>
@@ -56,7 +50,6 @@ export default function PatientDashboard() {
           </button>
         </div>
 
-        {/* Second Row */}
         <button
           className="new-prediction-btn"
           onClick={() => navigate("/predict")}
@@ -66,7 +59,7 @@ export default function PatientDashboard() {
       </div>
 
       {history.map((item) => {
-        const severity = getSeverity(item.probability || 0);
+        const severity = item.severity;   // ✅ From backend
 
         return (
           <div key={item.id} className="record-card">
@@ -79,29 +72,29 @@ export default function PatientDashboard() {
               </div>
 
               <span className={getSeverityClass(severity)}>
-                {severity}
+                {severity || "Unknown"}
               </span>
             </div>
 
             <div className="metrics">
               <div className="metric-box">
                 <p>Bilirubin</p>
-                <h3>{item.bilirubin || "-"}</h3>
+                <h3>{item.bilirubin ?? "-"}</h3>
               </div>
 
               <div className="metric-box">
                 <p>Albumin</p>
-                <h3>{item.albumin || "-"}</h3>
+                <h3>{item.albumin ?? "-"}</h3>
               </div>
 
               <div className="metric-box">
                 <p>Protime</p>
-                <h3>{item.protime || "-"}</h3>
+                <h3>{item.protime ?? "-"}</h3>
               </div>
 
               <div className="metric-box">
                 <p>AST</p>
-                <h3>{item.ast || "-"}</h3>
+                <h3>{item.ast ?? "-"}</h3>
               </div>
             </div>
           </div>

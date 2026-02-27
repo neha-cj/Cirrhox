@@ -17,10 +17,19 @@ class HybridPredictor:
 
         final = (self.w_clinical * p1) + (self.w_ultrasound * p2)
 
+        # Clinical severity mapping
+        if final < 0.3:
+            severity = "Low"
+        elif final < 0.6:
+            severity = "Moderate"
+        else:
+            severity = "High"
+
         return {
             "clinical_prob": p1,
             "ultrasound_prob": p2,
             "final_prob": final,
             "diagnosis": "High Fibrosis Risk" if final > 0.5 else "Low Fibrosis Risk",
-            "confidence": abs(final - 0.5) * 2  # normalized 0–1 confidence
+            "severity": severity,
+            "confidence": abs(final - 0.5) * 2
         }
