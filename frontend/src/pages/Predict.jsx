@@ -2,13 +2,14 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import API from "../utils/api";
 import "./predict.css";
-import { FlaskConical, Upload } from "lucide-react";
+import { FlaskConical, Upload, CheckCircle } from "lucide-react";
 
 export default function Predict() {
   const navigate = useNavigate();
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [selectedFile, setSelectedFile] = useState(null);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -118,18 +119,33 @@ export default function Predict() {
       <div className="upload-section">
         <label>Ultrasound Image</label>
 
-        <div className="upload-box">
-          <input
-            name="file"
-            type="file"
-            accept="image/*"
-            required
-          />
-          <Upload size={40} strokeWidth={2} className="upload-icon" />
+        {/* Hidden File Input */}
+        <input
+          type="file"
+          accept="image/*"
+          onChange={(e) => {
+            const file = e.target.files[0];
+            setSelectedFile(file);
+          }}
+          hidden
+          id="fileUpload"
+        />
 
-          <p>Click to upload ultrasound image</p>
-          <span>PNG, JPG up to 10MB</span>
-        </div>
+        {/* Clickable Upload Box */}
+        <label htmlFor="fileUpload" className="upload-box">
+          {selectedFile ? (
+            <div className="file-selected">
+              <CheckCircle size={22} className="check-icon" />
+              <span className="file-name">{selectedFile.name}</span>
+            </div>
+          ) : (
+            <>
+              <Upload size={40} strokeWidth={2} className="upload-icon" />
+              <p>Click to upload ultrasound image</p>
+              <span>PNG, JPG up to 10MB</span>
+            </>
+          )}
+        </label>
       </div>
 
       <button
