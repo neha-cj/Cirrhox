@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { ArrowUpDown } from "lucide-react";
 import "./doctorDashboard.css";
 
 export default function DoctorDashboard() {
@@ -8,6 +9,7 @@ export default function DoctorDashboard() {
   const [history, setHistory] = useState([]);
   const [sortField, setSortField] = useState("date");
   const [sortOrder, setSortOrder] = useState("desc");
+  const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -46,8 +48,15 @@ export default function DoctorDashboard() {
     navigate("/");
   }
 
-  // 🔥 Sorting Logic
-  const sortedHistory = [...history].sort((a, b) => {
+  // Filter first
+  const filteredHistory = history.filter((item) =>
+    item.patient_name
+      ?.toLowerCase()
+      .includes(searchTerm.toLowerCase())
+  );
+
+  // Then sort filtered results
+  const sortedHistory = [...filteredHistory].sort((a, b) => {
     let valueA, valueB;
 
     if (sortField === "date") {
@@ -126,26 +135,38 @@ export default function DoctorDashboard() {
         </div>
       </div>
 
-      {/* 🔥 Sort Controls */}
-      <div className="sort-controls">
-        <select
-          value={sortField}
-          onChange={(e) => setSortField(e.target.value)}
-          className="sort-select"
-        >
-          <option value="date">Date</option>
-          <option value="name">Name</option>
-          <option value="severity">Severity</option>
-        </select>
+      {/* 🔥 Controls Row (Left = future search, Right = sort) */}
+      <div className="table-controls">
+        <div className="left-controls">
+          <input
+            type="text"
+            placeholder="Search patients..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="search-input"
+          />
+        </div>
 
-        <button
-          className="sort-toggle"
-          onClick={() =>
-            setSortOrder(sortOrder === "asc" ? "desc" : "asc")
-          }
-        >
-          {sortOrder === "asc" ? "↑" : "↓"}
-        </button>
+        <div className="right-controls">
+          <select
+            value={sortField}
+            onChange={(e) => setSortField(e.target.value)}
+            className="sort-select"
+          >
+            <option value="date">Date</option>
+            <option value="name">Name</option>
+            <option value="severity">Severity</option>
+          </select>
+
+          <button
+            className="sort-toggle"
+            onClick={() =>
+              setSortOrder(sortOrder === "asc" ? "desc" : "asc")
+            }
+          >
+            <ArrowUpDown size={16} />
+          </button>
+        </div>
       </div>
 
       {/* Table */}
