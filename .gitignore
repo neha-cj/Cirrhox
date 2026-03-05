@@ -30,7 +30,7 @@ backend/.env
 Thumbs.db
 
 
-backend/models/densenet_model.h5
+backend/models/liver_ultrasound_densenet.h5
 backend/venv/
 
 # Python cache

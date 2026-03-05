@@ -1,3 +1,5 @@
+from unittest import result
+
 from fastapi import APIRouter, UploadFile, File, Form, Depends, HTTPException
 from sqlalchemy.orm import Session
 
@@ -25,11 +27,8 @@ hybrid_model = HybridPredictor()
 @router.post("/clinical")
 async def clinical_predict(data: dict):
     try:
-        prob = clinical_model.predict(data)
-        return {
-            "clinical_prob": prob,
-            "label": "High Risk" if prob > 0.5 else "Low Risk"
-        }
+        result = clinical_model.predict(data)
+        return result
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
@@ -41,11 +40,8 @@ async def clinical_predict(data: dict):
 async def ultrasound_predict(file: UploadFile = File(...)):
     try:
         bytes_data = await file.read()
-        prob = ultra_model.predict(bytes_data)
-        return {
-            "ultrasound_prob": prob,
-            "label": "High Risk" if prob > 0.5 else "Low Risk"
-        }
+        result = ultra_model.predict(bytes_data)
+        return result
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
@@ -53,6 +49,7 @@ async def ultrasound_predict(file: UploadFile = File(...)):
 # -------------------------------
 # Hybrid Predictor (SAVES HISTORY)
 # -------------------------------
+
 @router.post("/hybrid")
 async def hybrid_predict(
     bilirubin: float = Form(...),
@@ -63,6 +60,7 @@ async def hybrid_predict(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
+
     clinical_data = {
         "bili": bilirubin,
         "albumin": albumin,
@@ -75,24 +73,26 @@ async def hybrid_predict(
 
         result = hybrid_model.predict(clinical_data, img_bytes)
 
-        probability = result.get("final_prob")
-        label = result.get("diagnosis")
-        severity = result.get("severity")
+        # probability = result.get("confidence")
+        # label = result.get("prediction")
+        # severity = result.get("severity")
 
-        if probability is None or label is None or severity is None:
-            raise HTTPException(status_code=400, detail="Invalid prediction result")
+        if not result:
+            raise HTTPException(status_code=400, detail="Prediction failed")
 
-        # 🔥 Save to history
+        probability = result["confidence"]
+        label = result["prediction"]
+        severity = result["severity"]
+
         history_entry = PredictionHistory(
             user_id=current_user.id,
             prediction=label,
             probability=probability,
             severity=severity,
-
-            bilirubin = bilirubin,
-            albumin = albumin,
-            protime = protime,
-            ast = ast
+            bilirubin=bilirubin,
+            albumin=albumin,
+            protime=protime,
+            ast=ast
         )
 
         db.add(history_entry)

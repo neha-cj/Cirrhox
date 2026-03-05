@@ -32,5 +32,4 @@ def preprocess_ultrasound(file_bytes):
         return img_array
 
     except Exception as e:
-        print(f"Error in preprocessing: {e}")
-        return None
+        raise RuntimeError(f"Ultrasound preprocessing failed: {e}")
