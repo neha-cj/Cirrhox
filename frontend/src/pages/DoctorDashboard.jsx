@@ -83,13 +83,14 @@ export default function DoctorDashboard() {
   });
 
   // Stats
-  const totalRecords = history.length;
-  const highRisk = history.filter((item) => item.severity === "High").length;
-  const moderateRisk = history.filter((item) => item.severity === "Moderate").length;
-  const lowRisk = history.filter((item) => item.severity === "Low").length;
+  const totalRecords   = history.length;
+  const highRisk       = history.filter((item) => item.severity === "High").length;
+  const moderateRisk   = history.filter((item) => item.severity === "Moderate").length;
+  const lowRisk        = history.filter((item) => item.severity === "Low").length;
 
   return (
     <div className="doctor-container">
+
       {/* Header */}
       <div className="doctor-header">
         <div>
@@ -135,7 +136,7 @@ export default function DoctorDashboard() {
         </div>
       </div>
 
-      {/* 🔥 Controls Row (Left = future search, Right = sort) */}
+      {/* Controls Row */}
       <div className="table-controls">
         <div className="left-controls">
           <input
@@ -178,8 +179,9 @@ export default function DoctorDashboard() {
               <th>Date</th>
               <th>Bilirubin</th>
               <th>Albumin</th>
-              <th>Protime</th>
               <th>AST</th>
+              <th>ALT</th>
+              <th>ALP</th>
               <th>Result</th>
               <th>Severity</th>
             </tr>
@@ -189,10 +191,11 @@ export default function DoctorDashboard() {
               <tr key={item.id}>
                 <td>{item.patient_name}</td>
                 <td>{new Date(item.created_at).toLocaleDateString()}</td>
-                <td>{item.bilirubin}</td>
-                <td>{item.albumin}</td>
-                <td>{item.protime}</td>
-                <td>{item.ast}</td>
+                <td>{item.bilirubin ?? "-"}</td>
+                <td>{item.albumin   ?? "-"}</td>
+                <td>{item.ast       ?? "-"}</td>
+                <td>{item.alt       ?? "-"}</td>
+                <td>{item.alp       ?? "-"}</td>
                 <td>{item.prediction}</td>
                 <td>
                   <span className={`badge ${item.severity?.toLowerCase()}`}>
@@ -204,6 +207,7 @@ export default function DoctorDashboard() {
           </tbody>
         </table>
       </div>
+
     </div>
   );
 }

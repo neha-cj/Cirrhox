@@ -9,14 +9,15 @@ class PredictionHistory(Base):
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey("users.id"))
 
-    prediction = Column(String)
+    prediction  = Column(String)
     probability = Column(Float)
-    severity = Column(String)   # ✅ NEW COLUMN
+    severity    = Column(String)
 
     bilirubin = Column(Float)
-    albumin = Column(Float)
-    protime = Column(Float)
-    ast = Column(Float)
+    albumin   = Column(Float)
+    ast       = Column(Float)
+    alt       = Column(Float)
+    alp       = Column(Float)
 
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 

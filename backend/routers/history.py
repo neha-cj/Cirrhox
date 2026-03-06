@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends
-from sqlalchemy.orm import Session, joinedload
+from sqlalchemy.orm import Session
 from database import get_db
 from models_db.history_model import PredictionHistory
 from models_db.user_model import User
@@ -21,18 +21,20 @@ def my_history(
 
     for record in records:
         result.append({
-            "id": record.id,
+            "id":         record.id,
             "prediction": record.prediction,
             "probability": record.probability,
-            "severity": record.severity,       # ✅ ADD
-            "bilirubin": record.bilirubin,
-            "albumin": record.albumin,
-            "protime": record.protime,
-            "ast": record.ast,
+            "severity":   record.severity,
+            "bilirubin":  record.bilirubin,
+            "albumin":    record.albumin,
+            "ast":        record.ast,
+            "alt":        record.alt,
+            "alp":        record.alp,
             "created_at": record.created_at
         })
 
     return result
+
 
 @router.get("/all-history")
 def all_history(
@@ -47,18 +49,17 @@ def all_history(
     result = []
 
     for record in records:
-        user = db.query(User).filter(User.id == record.user_id).first()
-
         result.append({
-            "id": record.id,
-            "prediction": record.prediction,
-            "probability": record.probability,
-            "severity": record.severity,          # ✅ ADD THIS
-            "bilirubin": record.bilirubin,        # ✅ ADD
-            "albumin": record.albumin,            # ✅ ADD
-            "protime": record.protime,            # ✅ ADD
-            "ast": record.ast,                    # ✅ ADD
-            "created_at": record.created_at,
+            "id":           record.id,
+            "prediction":   record.prediction,
+            "probability":  record.probability,
+            "severity":     record.severity,
+            "bilirubin":    record.bilirubin,
+            "albumin":      record.albumin,
+            "ast":          record.ast,
+            "alt":          record.alt,
+            "alp":          record.alp,
+            "created_at":   record.created_at,
             "patient_name": record.user.name
         })
 

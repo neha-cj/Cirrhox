@@ -31,13 +31,12 @@ export default function Predict() {
 
       const formData = new FormData();
 
-
       formData.append("bilirubin", e.target.bilirubin.value);
-      formData.append("albumin", e.target.albumin.value);
-      formData.append("protime", e.target.protime.value);
-      formData.append("ast", e.target.ast.value);
-      formData.append("file", selectedFile);
-      
+      formData.append("albumin",   e.target.albumin.value);
+      formData.append("ast",       e.target.ast.value);
+      formData.append("alt",       e.target.alt.value);
+      formData.append("alp",       e.target.alp.value);
+      formData.append("file",      selectedFile);
 
       const res = await fetch("http://localhost:8000/predict/hybrid", {
         method: "POST",
@@ -102,23 +101,34 @@ export default function Predict() {
           </div>
 
           <div className="input-group">
-            <label>Protime (sec)</label>
-            <input
-              name="protime"
-              type="number"
-              step="0.1"
-              placeholder="e.g. 12.5"
-              required
-            />
-          </div>
-
-          <div className="input-group">
             <label>AST (U/L)</label>
             <input
               name="ast"
               type="number"
               step="1"
               placeholder="e.g. 45"
+              required
+            />
+          </div>
+
+          <div className="input-group">
+            <label>ALT (U/L)</label>
+            <input
+              name="alt"
+              type="number"
+              step="1"
+              placeholder="e.g. 35"
+              required
+            />
+          </div>
+
+          <div className="input-group">
+            <label>ALP (U/L)</label>
+            <input
+              name="alp"
+              type="number"
+              step="1"
+              placeholder="e.g. 85"
               required
             />
           </div>

@@ -59,7 +59,7 @@ export default function PatientDashboard() {
       </div>
 
       {history.map((item) => {
-        const severity = item.severity;   // ✅ From backend
+        const severity = item.severity;
 
         return (
           <div key={item.id} className="record-card">
@@ -88,13 +88,18 @@ export default function PatientDashboard() {
               </div>
 
               <div className="metric-box">
-                <p>Protime</p>
-                <h3>{item.protime ?? "-"}</h3>
+                <p>AST</p>
+                <h3>{item.ast ?? "-"}</h3>
               </div>
 
               <div className="metric-box">
-                <p>AST</p>
-                <h3>{item.ast ?? "-"}</h3>
+                <p>ALT</p>
+                <h3>{item.alt ?? "-"}</h3>
+              </div>
+
+              <div className="metric-box">
+                <p>ALP</p>
+                <h3>{item.alp ?? "-"}</h3>
               </div>
             </div>
           </div>

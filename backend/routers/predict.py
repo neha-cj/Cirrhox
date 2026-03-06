@@ -1,5 +1,3 @@
-from unittest import result
-
 from fastapi import APIRouter, UploadFile, File, Form, Depends, HTTPException
 from sqlalchemy.orm import Session
 
@@ -53,19 +51,21 @@ async def ultrasound_predict(file: UploadFile = File(...)):
 @router.post("/hybrid")
 async def hybrid_predict(
     bilirubin: float = Form(...),
-    albumin: float = Form(...),
-    protime: float = Form(...),
-    ast: float = Form(...),
+    albumin:   float = Form(...),
+    ast:       float = Form(...),
+    alt:       float = Form(...),
+    alp:       float = Form(...),
     file: UploadFile = File(...),
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
 
     clinical_data = {
-        "bili": bilirubin,
-        "albumin": albumin,
-        "protime": protime,
-        "sgot": ast
+        "bilirubin": bilirubin,
+        "albumin":   albumin,
+        "ast":       ast,
+        "alt":       alt,
+        "alp":       alp
     }
 
     try:
@@ -73,16 +73,12 @@ async def hybrid_predict(
 
         result = hybrid_model.predict(clinical_data, img_bytes)
 
-        # probability = result.get("confidence")
-        # label = result.get("prediction")
-        # severity = result.get("severity")
-
         if not result:
             raise HTTPException(status_code=400, detail="Prediction failed")
 
         probability = result["confidence"]
-        label = result["prediction"]
-        severity = result["severity"]
+        label       = result["prediction"]
+        severity    = result["severity"]
 
         history_entry = PredictionHistory(
             user_id=current_user.id,
@@ -91,8 +87,9 @@ async def hybrid_predict(
             severity=severity,
             bilirubin=bilirubin,
             albumin=albumin,
-            protime=protime,
-            ast=ast
+            ast=ast,
+            alt=alt,
+            alp=alp
         )
 
         db.add(history_entry)
