@@ -4,7 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from database import engine, Base
 from models_db import user_model, history_model
 
-from routers import auth, history, predict
+from routers import auth, history, predict, patients
 
 
 app = FastAPI(title="Cirrhox Backend")
@@ -16,6 +16,7 @@ Base.metadata.create_all(bind=engine)
 app.include_router(auth.router)
 app.include_router(history.router)
 app.include_router(predict.router)
+app.include_router(patients.router)
 
 # Allow frontend
 app.add_middleware(

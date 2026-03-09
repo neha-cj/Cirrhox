@@ -5,6 +5,7 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import PatientDashboard from "./pages/PatientDashboard";
 import DoctorDashboard from "./pages/DoctorDashboard";
+import DoctorPatients from "./pages/DoctorPatients";
 import History from "./pages/History";
 import Predict from "./pages/Predict";
 
@@ -41,9 +42,28 @@ function App() {
         />
 
         <Route
+          path="/doctor/patients"
+          element={
+            <ProtectedRoute allowedRoles={["doctor"]}>
+              <DoctorPatients />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Doctor Prediction for Specific Patient */}
+        <Route
+          path="/doctor/predict/:patientId"
+          element={
+            <ProtectedRoute allowedRoles={["doctor"]}>
+              <Predict />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
           path="/predict"
           element={
-            <ProtectedRoute allowedRoles={["patient", "doctor"]}>
+            <ProtectedRoute allowedRoles={["patient"]}>
               <Predict />
             </ProtectedRoute>
           }

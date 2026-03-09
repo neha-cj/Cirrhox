@@ -1,0 +1,36 @@
+.doctor-patients-container {
+  padding: 40px;
+}
+
+.patients-header h1 {
+  margin-bottom: 5px;
+}
+
+.patients-controls {
+  margin: 20px 0;
+}
+
+.patients-search {
+  padding: 10px;
+  width: 300px;
+}
+
+.patients-table table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.patients-table th,
+.patients-table td {
+  padding: 12px;
+  border-bottom: 1px solid #ddd;
+}
+
+.predict-btn {
+  padding: 8px 14px;
+  background: #2563eb;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}

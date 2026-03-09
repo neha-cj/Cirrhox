@@ -107,9 +107,9 @@ export default function DoctorDashboard() {
       <div className="action-section">
         <button
           className="primary-btn"
-          onClick={() => navigate("/predict")}
+          onClick={() => navigate("/doctor/patients")}
         >
-          + New Prediction
+          + Predict for Patient
         </button>
       </div>
 

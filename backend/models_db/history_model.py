@@ -8,6 +8,7 @@ class PredictionHistory(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey("users.id"))
+    doctor_id = Column(Integer, ForeignKey("users.id"), nullable=True)
 
     prediction  = Column(String)
     probability = Column(Float)
@@ -21,4 +22,6 @@ class PredictionHistory(Base):
 
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
-    user = relationship("User", back_populates="history")
+    # relationships
+    user = relationship("User", foreign_keys=[user_id], back_populates="history")
+    doctor = relationship("User", foreign_keys=[doctor_id])

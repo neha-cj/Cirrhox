@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import "./predict.css";
 import { FlaskConical, Upload, CheckCircle } from "lucide-react";
 
 export default function Predict() {
   const navigate = useNavigate();
+  const { patientId } = useParams();
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -12,7 +13,16 @@ export default function Predict() {
 
   useEffect(() => {
     const token = localStorage.getItem("token");
-    if (!token) navigate("/");
+    const role = localStorage.getItem("role");
+
+    if (!token) {
+      navigate("/");
+      return;
+    }
+
+    if (role === "doctor" && !patientId) {
+      navigate("/doctor/patients");
+    }
   }, []);
 
   async function handleSubmit(e) {
@@ -31,6 +41,7 @@ export default function Predict() {
 
       const formData = new FormData();
 
+      formData.append("patient_id", patientId);
       formData.append("bilirubin", e.target.bilirubin.value);
       formData.append("albumin",   e.target.albumin.value);
       formData.append("ast",       e.target.ast.value);
@@ -50,7 +61,13 @@ export default function Predict() {
         throw new Error("Prediction failed");
       }
 
-      navigate("/patient");
+      const role = localStorage.getItem("role");
+
+      if (role === "doctor") {
+        navigate("/doctor");
+      } else {
+        navigate("/patient");
+      }
 
     } catch (err) {
       setError("Prediction failed");

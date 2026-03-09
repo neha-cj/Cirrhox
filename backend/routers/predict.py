@@ -13,15 +13,17 @@ from ml.ultrasound_predictor import UltrasoundPredictor
 
 router = APIRouter(prefix="/predict", tags=["Predict"])
 
-# Load models once
+
+# Load models once (when server starts)
 clinical_model = ClinicalPredictor()
 ultra_model = UltrasoundPredictor()
 hybrid_model = HybridPredictor()
 
 
-# -------------------------------
+# ----------------------------------
 # Clinical Predictor
-# -------------------------------
+# ----------------------------------
+
 @router.post("/clinical")
 async def clinical_predict(data: dict):
     try:
@@ -31,9 +33,10 @@ async def clinical_predict(data: dict):
         raise HTTPException(status_code=400, detail=str(e))
 
 
-# -------------------------------
+# ----------------------------------
 # Ultrasound Predictor
-# -------------------------------
+# ----------------------------------
+
 @router.post("/ultrasound")
 async def ultrasound_predict(file: UploadFile = File(...)):
     try:
@@ -44,9 +47,9 @@ async def ultrasound_predict(file: UploadFile = File(...)):
         raise HTTPException(status_code=400, detail=str(e))
 
 
-# -------------------------------
-# Hybrid Predictor (SAVES HISTORY)
-# -------------------------------
+# ----------------------------------
+# Hybrid Predictor (Saves History)
+# ----------------------------------
 
 @router.post("/hybrid")
 async def hybrid_predict(
@@ -55,22 +58,28 @@ async def hybrid_predict(
     ast:       float = Form(...),
     alt:       float = Form(...),
     alp:       float = Form(...),
+
+    patient_id: int = Form(None),  # used when doctor predicts
+
     file: UploadFile = File(...),
+
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
 
     clinical_data = {
         "bilirubin": bilirubin,
-        "albumin":   albumin,
-        "ast":       ast,
-        "alt":       alt,
-        "alp":       alp
+        "albumin": albumin,
+        "ast": ast,
+        "alt": alt,
+        "alp": alp
     }
 
     try:
+        # Read ultrasound image
         img_bytes = await file.read()
 
+        # Run hybrid model
         result = hybrid_model.predict(clinical_data, img_bytes)
 
         if not result:
@@ -80,8 +89,42 @@ async def hybrid_predict(
         label       = result["prediction"]
         severity    = result["severity"]
 
+        # ----------------------------------
+        # Determine patient for the record
+        # ----------------------------------
+
+        if current_user.role == "doctor":
+
+            if not patient_id:
+                raise HTTPException(
+                    status_code=400,
+                    detail="Patient ID required for doctor prediction"
+                )
+
+            patient = db.query(User).filter(User.id == patient_id).first()
+
+            if not patient:
+                raise HTTPException(
+                    status_code=404,
+                    detail="Patient not found"
+                )
+
+            user_id = patient.id
+            doctor_id = current_user.id
+
+        else:
+            # patient self prediction
+            user_id = current_user.id
+            doctor_id = None
+
+
+        # ----------------------------------
+        # Save Prediction History
+        # ----------------------------------
+
         history_entry = PredictionHistory(
-            user_id=current_user.id,
+            user_id=user_id,
+            doctor_id=doctor_id,
             prediction=label,
             probability=probability,
             severity=severity,
