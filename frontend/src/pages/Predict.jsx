@@ -41,7 +41,10 @@ export default function Predict() {
 
       const formData = new FormData();
 
-      formData.append("patient_id", patientId);
+      if (patientId) {
+        formData.append("patient_id", patientId);
+      }
+
       formData.append("bilirubin", e.target.bilirubin.value);
       formData.append("albumin",   e.target.albumin.value);
       formData.append("ast",       e.target.ast.value);
