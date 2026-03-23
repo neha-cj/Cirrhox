@@ -70,7 +70,7 @@ button:hover {
 }
 
 button:disabled {
-  background-color: #94a3b8;
+  background-color: #2f9e8f;
   cursor: not-allowed;
 }
 
@@ -116,7 +116,7 @@ select {
 
 input:focus,
 select:focus {
-  border-color: #2563eb;
+  border-color: #2f9e8f;
 }
 
 /* ============================= */
@@ -157,7 +157,6 @@ select:focus {
 .result-box {
   margin-top: 15px;
   padding: 15px;
-  background-color: #f1f5f9;
   border-radius: 8px;
 }
 

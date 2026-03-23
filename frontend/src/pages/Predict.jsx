@@ -10,6 +10,8 @@ export default function Predict() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [selectedFile, setSelectedFile] = useState(null);
+  const [result, setResult] = useState(null);
+  const [showPopup, setShowPopup] = useState(false);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -46,11 +48,11 @@ export default function Predict() {
       }
 
       formData.append("bilirubin", e.target.bilirubin.value);
-      formData.append("albumin",   e.target.albumin.value);
-      formData.append("ast",       e.target.ast.value);
-      formData.append("alt",       e.target.alt.value);
-      formData.append("alp",       e.target.alp.value);
-      formData.append("file",      selectedFile);
+      formData.append("albumin", e.target.albumin.value);
+      formData.append("ast", e.target.ast.value);
+      formData.append("alt", e.target.alt.value);
+      formData.append("alp", e.target.alp.value);
+      formData.append("file", selectedFile);
 
       const res = await fetch("http://localhost:8000/predict/hybrid", {
         method: "POST",
@@ -64,13 +66,12 @@ export default function Predict() {
         throw new Error("Prediction failed");
       }
 
-      const role = localStorage.getItem("role");
+      // ✅ GET RESULT
+      const data = await res.json();
 
-      if (role === "doctor") {
-        navigate("/doctor");
-      } else {
-        navigate("/patient");
-      }
+      // ✅ SHOW POPUP INSTEAD OF NAVIGATE
+      setResult(data);
+      setShowPopup(true);
 
     } catch (err) {
       setError("Prediction failed");
@@ -84,11 +85,7 @@ export default function Predict() {
 
       <div className="predict-header">
         <h1 className="predict-title">
-          <FlaskConical
-            size={28}
-            strokeWidth={2.5}
-            className="predict-icon"
-          />
+          <FlaskConical size={28} strokeWidth={2.5} className="predict-icon" />
           Liver Fibrosis Prediction
         </h1>
         <p>Enter clinical biomarkers and upload ultrasound for analysis</p>
@@ -100,57 +97,27 @@ export default function Predict() {
 
           <div className="input-group">
             <label>Bilirubin (mg/dL)</label>
-            <input
-              name="bilirubin"
-              type="number"
-              step="0.01"
-              placeholder="e.g. 1.2"
-              required
-            />
+            <input name="bilirubin" type="number" step="0.01" required />
           </div>
 
           <div className="input-group">
             <label>Albumin (g/dL)</label>
-            <input
-              name="albumin"
-              type="number"
-              step="0.01"
-              placeholder="e.g. 3.8"
-              required
-            />
+            <input name="albumin" type="number" step="0.01" required />
           </div>
 
           <div className="input-group">
             <label>AST (U/L)</label>
-            <input
-              name="ast"
-              type="number"
-              step="1"
-              placeholder="e.g. 45"
-              required
-            />
+            <input name="ast" type="number" required />
           </div>
 
           <div className="input-group">
             <label>ALT (U/L)</label>
-            <input
-              name="alt"
-              type="number"
-              step="1"
-              placeholder="e.g. 35"
-              required
-            />
+            <input name="alt" type="number" required />
           </div>
 
           <div className="input-group">
             <label>ALP (U/L)</label>
-            <input
-              name="alp"
-              type="number"
-              step="1"
-              placeholder="e.g. 85"
-              required
-            />
+            <input name="alp" type="number" required />
           </div>
 
         </div>
@@ -160,12 +127,8 @@ export default function Predict() {
 
           <input
             type="file"
-            name="file"
             accept="image/*"
-            onChange={(e) => {
-              const file = e.target.files[0];
-              setSelectedFile(file);
-            }}
+            onChange={(e) => setSelectedFile(e.target.files[0])}
             hidden
             id="fileUpload"
           />
@@ -174,13 +137,12 @@ export default function Predict() {
             {selectedFile ? (
               <div className="file-selected">
                 <CheckCircle size={22} className="check-icon" />
-                <span className="file-name">{selectedFile.name}</span>
+                <span>{selectedFile.name}</span>
               </div>
             ) : (
               <>
-                <Upload size={40} strokeWidth={2} className="upload-icon" />
+                <Upload size={40} className="upload-icon" />
                 <p>Click to upload ultrasound image</p>
-                <span>PNG, JPG up to 10MB</span>
               </>
             )}
           </label>
@@ -195,8 +157,49 @@ export default function Predict() {
         </button>
 
         {error && <p className="error">{error}</p>}
-
       </form>
+
+      {/* ✅ POPUP */}
+      {showPopup && result && (
+        <div className="overlay">
+          <div className="popup">
+
+            {/* Header */}
+            <h2 className="popup-title">Prediction Result</h2>
+
+            {/* Subheading */}
+            <p className="popup-subtitle">
+              Liver fibrosis analysis complete
+            </p>
+
+            {/* Result Box */}
+            <div className={`result-box ${result.severity?.toLowerCase()}`}>
+              
+              <p><strong>Diagnosis:</strong> {result.prediction}</p>
+              <p><strong>Severity:</strong> {result.severity}</p>
+
+            </div>
+
+            {/* Button */}
+            <button
+              className="dashboard-btn"
+              onClick={() => {
+                const role = localStorage.getItem("role");
+
+                if (role === "doctor") {
+                  navigate("/doctor");
+                } else {
+                  navigate("/patient");
+                }
+              }}
+            >
+              Go to Dashboard
+            </button>
+
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }
