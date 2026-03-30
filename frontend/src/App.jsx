@@ -69,16 +69,6 @@ function App() {
           }
         />
 
-        {/* Patient sees own history, Doctor sees all */}
-        <Route
-          path="/history"
-          element={
-            <ProtectedRoute allowedRoles={["patient", "doctor"]}>
-              <History />
-            </ProtectedRoute>
-          }
-        />
-
       </Routes>
     </BrowserRouter>
   );

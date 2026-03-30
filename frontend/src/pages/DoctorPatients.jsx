@@ -122,31 +122,3 @@ export default function DoctorPatients() {
     </div>
   );
 }
-
-
-// import { useNavigate } from "react-router-dom";
-
-// function DoctorPatients({ patients }) {
-
-//   const navigate = useNavigate();
-
-//   function handleSelectPatient(patient) {
-//     navigate(`/doctor/predict/${patient.id}`);
-//   }
-
-//   return (
-//     <div>
-//       {patients.map((patient) => (
-//         <div key={patient.id}>
-//           <span>{patient.name}</span>
-
-//           <button
-//             onClick={() => handleSelectPatient(patient)}
-//           >
-//             Predict
-//           </button>
-//         </div>
-//       ))}
-//     </div>
-//   );
-// }
